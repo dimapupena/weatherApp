@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 import Foundation
 
 // viewController
@@ -29,7 +30,6 @@ class WeatherViewController: UIViewController, AnyView {
     
     private let searchTextField: UITextField = {
         let textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
         textField.clipsToBounds = true
         textField.layer.cornerRadius = 15
         textField.placeholder = "Enter city name"
@@ -42,7 +42,6 @@ class WeatherViewController: UIViewController, AnyView {
     
     private let searchButton: UIButton = {
         let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .systemRed
         button.setTitle("Find", for: .normal)
         button.clipsToBounds = true
@@ -51,7 +50,7 @@ class WeatherViewController: UIViewController, AnyView {
         return button
     }()
     
-    private let collectionView: UICollectionView = {
+    private let dailyWeatherCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -60,15 +59,11 @@ class WeatherViewController: UIViewController, AnyView {
         collectionView.isPagingEnabled = true
         collectionView.bounces = false
         collectionView.backgroundColor = .cyan
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         return collectionView
     }()
     
-    private let weatherDetailsView: WeatherDetailsView = {
-        let view = WeatherDetailsView()
-        return view
-    }()
+    private let weatherDetailsView: WeatherDetailsView = WeatherDetailsView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,43 +76,44 @@ class WeatherViewController: UIViewController, AnyView {
         setupWeatherDetailsView()
     }
     
-    func setupTextField() {
+    private func setupTextField() {
         self.view.addSubview(searchTextField)
-        
-        searchTextField.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20).isActive = true
-        searchTextField.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        searchTextField.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20).isActive = true
-        searchTextField.heightAnchor.constraint(equalToConstant: 70).isActive = true
+        searchTextField.snp.makeConstraints { make in
+            make.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
+            make.leading.equalToSuperview().inset(20)
+            make.height.equalTo(50)
+        }
     }
     
-    func setupSearchButton() {
+    private func setupSearchButton() {
         self.view.addSubview(searchButton)
-        
-        searchButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 50).isActive = true
-        searchButton.topAnchor.constraint(equalTo: self.searchTextField.bottomAnchor, constant: 20).isActive = true
-        searchButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -50).isActive = true
-        searchButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        searchButton.snp.makeConstraints { make in
+            make.top.bottom.equalTo(searchTextField)
+            make.trailing.equalToSuperview().inset(20)
+            make.leading.equalTo(searchTextField.snp.trailing).offset(20)
+            make.width.equalTo(50)
+        }
     }
     
-    func setupCollectionView() {
-        self.view.addSubview(collectionView)
+    private func setupCollectionView() {
+        self.view.addSubview(dailyWeatherCollectionView)
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
+        dailyWeatherCollectionView.dataSource = self
+        dailyWeatherCollectionView.delegate = self
         
-        collectionView.topAnchor.constraint(equalTo: self.searchButton.bottomAnchor, constant: 20).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        collectionView.heightAnchor.constraint(equalToConstant: CGFloat(CollectionCellSize.collectionHeight.rawValue)).isActive = true
+        dailyWeatherCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(searchButton.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(CGFloat(CollectionCellSize.collectionHeight.rawValue))
+        }
     }
     
-    func setupWeatherDetailsView() {
+    private func setupWeatherDetailsView() {
         self.view.addSubview(weatherDetailsView)
-        
-        weatherDetailsView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-        weatherDetailsView.topAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
-        weatherDetailsView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-        weatherDetailsView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        weatherDetailsView.snp.makeConstraints { make in
+            make.top.equalTo(dailyWeatherCollectionView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
     }
     
     func updateWeahter(with weather: Weather?) {
@@ -143,7 +139,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "weatherCell", for: indexPath) as! UIWeatherCollectionViewCell
-        cell.updateweatherData(city: "Paris", temperature: "23", condition: "top")
+        cell.updateWeatherData(city: "Paris", temperature: "23", condition: "top")
         return cell
     }
     

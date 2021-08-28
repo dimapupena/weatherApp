@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+# platform :ios, '10.0'
 
 target 'weatherApp' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -7,5 +7,6 @@ target 'weatherApp' do
 
   # Pods for weatherApp
    pod 'Alamofire'
+   pod 'SnapKit'
 
 end

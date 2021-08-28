@@ -7,34 +7,51 @@
 
 import Foundation
 import UIKit
+import SnapKit
 
 class UIWeatherCollectionViewCell: UICollectionViewCell {
     
-    private let cityLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let weatherReviewView: WeatherReviewView = WeatherReviewView()
     
-    private let temperatureLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private let weatherConditionLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = .red
+        
+        setupWeatherReview()
     }
     
-    func updateweatherData(city: String, temperature: String, condition: String) {
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupWeatherReview() {
+        addSubview(weatherReviewView)
+        weatherReviewView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    func updateWeatherData(city: String, temperature: String, condition: String) {
+        weatherReviewView.updateWeatherData(city: city, temperature: temperature, condition: condition)
+    }
+}
+
+class WeatherReviewView: UIView {
+    
+    private let cityLabel: UILabel = UILabel()
+    private let temperatureLabel: UILabel = UILabel()
+    private let weatherConditionLabel: UILabel = UILabel()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    fileprivate func updateWeatherData(city: String, temperature: String, condition: String) {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = .red
         
@@ -46,35 +63,30 @@ class UIWeatherCollectionViewCell: UICollectionViewCell {
         self.weatherConditionLabel.text = condition
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private func setupCityLabel() {
-        self.contentView.addSubview(cityLabel)
-        
-        cityLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 20).isActive = true
-        cityLabel.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
-        cityLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        cityLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        self.addSubview(cityLabel)
+        cityLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(50)
+        }
     }
     
     private func setupTemperatureLabel() {
-        self.contentView.addSubview(temperatureLabel)
-        
-        temperatureLabel.topAnchor.constraint(equalTo: cityLabel.bottomAnchor).isActive = true
-        temperatureLabel.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
-        temperatureLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        temperatureLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        self.addSubview(temperatureLabel)
+        temperatureLabel.snp.makeConstraints { make in
+            make.top.equalTo(cityLabel.snp.bottom)
+            make.centerX.equalToSuperview()
+            make.height.width.equalTo(50)
+        }
     }
     
     private func setupWeatherConditionLabel() {
-        self.contentView.addSubview(weatherConditionLabel)
-        
-        weatherConditionLabel.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor).isActive = true
-        weatherConditionLabel.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
-        weatherConditionLabel.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        weatherConditionLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        self.addSubview(weatherConditionLabel)
+        weatherConditionLabel.snp.makeConstraints { make in
+            make.top.equalTo(temperatureLabel.snp.bottom)
+            make.centerX.equalToSuperview()
+            make.height.width.equalTo(50)
+        }
     }
-    
 }
