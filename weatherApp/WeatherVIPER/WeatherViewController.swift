@@ -14,8 +14,13 @@ import Foundation
 // ref to presenter
 
 enum CollectionCellSize: Int {
-    case collectionHeight = 150
+    case collectionHeight = 200
     case collectionWidth = 100
+}
+
+enum CollectionViewType {
+    case oftenLocation
+    case weatherInfo
 }
 
 protocol AnyView {
@@ -27,6 +32,9 @@ protocol AnyView {
 
 class WeatherViewController: UIViewController, AnyView {
     var presenter: AnyPresenter?
+    
+    let dailyWeatherCollectionViewCellId = "weatherCell"
+    let locationsCollectionViewCellId = "locationCell"
     
     private let searchTextField: UITextField = {
         let textField = UITextField()
@@ -50,15 +58,24 @@ class WeatherViewController: UIViewController, AnyView {
         return button
     }()
     
-    private let dailyWeatherCollectionView: UICollectionView = {
+    private lazy var locationsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(UIWeatherCollectionViewCell.self, forCellWithReuseIdentifier: "weatherCell")
+        collectionView.register(UILocationCollectionViewCell.self, forCellWithReuseIdentifier: locationsCollectionViewCellId)
+        collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.isPagingEnabled = true
-        collectionView.bounces = false
-        collectionView.backgroundColor = .cyan
+        
+        return collectionView
+    }()
+    
+    private lazy var dailyWeatherCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(UIWeatherCollectionViewCell.self, forCellWithReuseIdentifier: dailyWeatherCollectionViewCellId)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.backgroundColor = .clear
         
         return collectionView
     }()
@@ -72,7 +89,8 @@ class WeatherViewController: UIViewController, AnyView {
         
         setupTextField()
         setupSearchButton()
-        setupCollectionView()
+        setupLocationsCollectionView()
+        setupDailyWeatherCollectionView()
         setupWeatherDetailsView()
     }
     
@@ -95,14 +113,27 @@ class WeatherViewController: UIViewController, AnyView {
         }
     }
     
-    private func setupCollectionView() {
+    private func setupLocationsCollectionView() {
+        self.view.addSubview(locationsCollectionView)
+        
+        locationsCollectionView.dataSource = self
+        locationsCollectionView.delegate = self
+        
+        locationsCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(searchButton.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(50)
+        }
+    }
+    
+    private func setupDailyWeatherCollectionView() {
         self.view.addSubview(dailyWeatherCollectionView)
         
         dailyWeatherCollectionView.dataSource = self
         dailyWeatherCollectionView.delegate = self
         
         dailyWeatherCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(searchButton.snp.bottom).offset(20)
+            make.top.equalTo(locationsCollectionView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(CGFloat(CollectionCellSize.collectionHeight.rawValue))
         }
@@ -117,16 +148,28 @@ class WeatherViewController: UIViewController, AnyView {
     }
     
     func updateWeahter(with weather: Weather?) {
+        guard let weather = weather else { return }
         print("update view with weather")
+        
+        weatherDetailsView.updateWeatherData(weather)
     }
 
     func updateWeahterWithError(with error: Error?) {
         print("update view with error")
     }
     
+    fileprivate func getCollectionType(_ view: UICollectionView) -> CollectionViewType {
+        if view == locationsCollectionView {
+            return .oftenLocation
+        } else {
+            return .weatherInfo
+        }
+    }
+    
     @objc private func searchButtonClicked() {
         print("fetching data")
-        self.presenter?.fetchWeather()
+        let location = UserLocation(Name: searchTextField.text!)
+        self.presenter?.fetchWeather(location)
     }
     
 }
@@ -134,17 +177,34 @@ class WeatherViewController: UIViewController, AnyView {
 extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        switch getCollectionType(collectionView) {
+        case .oftenLocation:
+            return 5
+        case .weatherInfo:
+            return 10
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "weatherCell", for: indexPath) as! UIWeatherCollectionViewCell
-        cell.updateWeatherData(city: "Paris", temperature: "23", condition: "top")
-        return cell
+        switch getCollectionType(collectionView) {
+        case .oftenLocation:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationsCollectionViewCellId, for: indexPath) as! UILocationCollectionViewCell
+            cell.updateData(location: "Kyiv")
+            return cell
+        case .weatherInfo:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: dailyWeatherCollectionViewCellId, for: indexPath) as! UIWeatherCollectionViewCell
+            cell.updateWeatherData(city: "Paris", temperature: "23", condition: "top")
+            return cell
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: CollectionCellSize.collectionWidth.rawValue, height: CollectionCellSize.collectionHeight.rawValue)
+        switch getCollectionType(collectionView) {
+        case .oftenLocation:
+            return CGSize(width: 200, height: 50)
+        case .weatherInfo:
+            return CGSize(width: CollectionCellSize.collectionWidth.rawValue, height: CollectionCellSize.collectionHeight.rawValue)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -152,7 +212,12 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
+        switch getCollectionType(collectionView) {
+        case .oftenLocation:
+            print("oftenLocation action", indexPath.row)
+        case .weatherInfo:
+            print("weatherInfo action", indexPath.row)
+        }
     }
     
 }

@@ -16,7 +16,7 @@ protocol AnyPresenter {
     var interactor: AnyInteractor? { get set }
     var view: AnyView? { get set }
     
-    func fetchWeather()
+    func fetchWeather(_ location: UserLocation)
     func interactorDidFetchWeather(with result: Result<Weather, Error>?)
 }
 
@@ -38,8 +38,8 @@ class WeatherPresenter: AnyPresenter {
         }
     }
     
-    func fetchWeather() {
-        interactor?.getWeather(for: "Paris")
+    func fetchWeather(_ location: UserLocation) {
+        interactor?.getWeather(for: location)
     }
     
 }

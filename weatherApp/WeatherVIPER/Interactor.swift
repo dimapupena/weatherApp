@@ -11,18 +11,18 @@ import Alamofire
 protocol AnyInteractor {
     var presenter: AnyPresenter? { get set }
     
-    func getWeather(for name: String)
+    func getWeather(for location: UserLocation)
 }
 
 class WeatherInteractor: AnyInteractor {
     var presenter: AnyPresenter?
     
-    func getWeather(for name: String = "Paris") {
+    func getWeather(for location: UserLocation) {
         guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, resolvingAgainstBaseURL: false) else { self.presenter?.interactorDidFetchWeather(with: nil); return }
         
         var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
         finalUrl?.queryItems = [URLQueryItem]()
-        finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: name))
+        finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
         AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
             let decoder = JSONDecoder()
             
