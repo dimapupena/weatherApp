@@ -38,6 +38,10 @@ class UILocationCollectionViewCell: UICollectionViewCell {
         self.location = UserLocation(Name: location)
     }
     
+    func getLocation() -> UserLocation? {
+        return self.location
+    }
+    
     private func setupSelf() {
         self.backgroundColor = UIColor(red: 173, green: 135, blue: 135)
         self.layer.cornerRadius = self.frame.size.height / 2

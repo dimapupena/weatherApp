@@ -28,7 +28,6 @@ class WeatherDetailsView: UIScrollView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     func updateWeatherData(_ weather: Weather) {
         self.cityLabel.text = weather.location.locationName
         self.temperatureLabel.text = NSDecimalNumber(decimal: weather.currentWeather.temp_c).stringValue

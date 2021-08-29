@@ -1,5 +1,5 @@
 //
-//  Weather.swift
+//  CurrentWeather.swift
 //  weatherApp
 //
 //  Created by Dmytro Pupena on 23.06.2021.

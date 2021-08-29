@@ -15,7 +15,7 @@ import Foundation
 
 enum CollectionCellSize: Int {
     case collectionHeight = 200
-    case collectionWidth = 100
+    case collectionWidth = 250
 }
 
 enum CollectionViewType {
@@ -27,6 +27,7 @@ protocol AnyView {
     var presenter: AnyPresenter? { get set }
     
     func updateWeahter(with weather: Weather?)
+    func updateForecastWeahter(with forecast: ForecastWeather?)
     func updateWeahterWithError(with error: Error?)
 }
 
@@ -35,6 +36,8 @@ class WeatherViewController: UIViewController, AnyView {
     
     let dailyWeatherCollectionViewCellId = "weatherCell"
     let locationsCollectionViewCellId = "locationCell"
+    let startLocation: String = "Boyarka"
+    var forecast: ForecastWeather?
     
     private let searchTextField: UITextField = {
         let textField = UITextField()
@@ -150,15 +153,27 @@ class WeatherViewController: UIViewController, AnyView {
     func updateWeahter(with weather: Weather?) {
         guard let weather = weather else { return }
         print("update view with weather")
+
+        DispatchQueue.main.async { [weak self] in
+            self?.weatherDetailsView.updateWeatherData(weather)
+        }
+    }
+    
+    func updateForecastWeahter(with forecast: ForecastWeather?) {
+        guard let forecast = forecast else { return }
+        self.forecast = forecast
+        print("update view with forecast weather")
         
-        weatherDetailsView.updateWeatherData(weather)
+        DispatchQueue.main.async { [weak self] in
+            self?.dailyWeatherCollectionView.reloadData()
+        }
     }
 
     func updateWeahterWithError(with error: Error?) {
         print("update view with error")
     }
     
-    fileprivate func getCollectionType(_ view: UICollectionView) -> CollectionViewType {
+    private func getCollectionType(_ view: UICollectionView) -> CollectionViewType {
         if view == locationsCollectionView {
             return .oftenLocation
         } else {
@@ -170,8 +185,14 @@ class WeatherViewController: UIViewController, AnyView {
         print("fetching data")
         let location = UserLocation(Name: searchTextField.text!)
         self.presenter?.fetchWeather(location)
+        self.presenter?.exploreForecast(location, days: 10)
     }
     
+    private func changeWeather(to location: UserLocation?) {
+        guard let location = location else { return }
+        self.presenter?.fetchWeather(location)
+        self.presenter?.exploreForecast(location, days: 10)
+    }
 }
 
 extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -181,7 +202,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
         case .oftenLocation:
             return 5
         case .weatherInfo:
-            return 10
+            return 3
         }
     }
     
@@ -189,11 +210,11 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
         switch getCollectionType(collectionView) {
         case .oftenLocation:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: locationsCollectionViewCellId, for: indexPath) as! UILocationCollectionViewCell
-            cell.updateData(location: "Kyiv")
+            cell.updateData(location: "London")
             return cell
         case .weatherInfo:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: dailyWeatherCollectionViewCellId, for: indexPath) as! UIWeatherCollectionViewCell
-            cell.updateWeatherData(city: "Paris", temperature: "23", condition: "top")
+            cell.updateWeatherData(city: forecast?.location.locationName, temperature: NSDecimalNumber(decimal: (self.forecast?.forecast.forecastday[indexPath.row].day.avgtemp_c) ?? 0.0).stringValue, condition: forecast?.forecast.forecastday[indexPath.row].day.condition.weatherTitle)
             return cell
         }
     }
@@ -214,6 +235,8 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch getCollectionType(collectionView) {
         case .oftenLocation:
+            let cell = collectionView.cellForItem(at: indexPath) as? UILocationCollectionViewCell
+            self.changeWeather(to: cell?.getLocation())
             print("oftenLocation action", indexPath.row)
         case .weatherInfo:
             print("weatherInfo action", indexPath.row)

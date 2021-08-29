@@ -18,11 +18,14 @@ class WeatherAPIParameters {
         static let base = "https://weatherapi-com.p.rapidapi.com"
         
         case currentWeather
+        case forecast
         
         var stringValue: String {
             switch self {
             case .currentWeather:
                 return Endpoints.base + "/current.json"
+            case .forecast:
+                return Endpoints.base + "/forecast.json"
             }
         }
         

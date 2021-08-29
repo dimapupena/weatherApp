@@ -30,7 +30,7 @@ class UIWeatherCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func updateWeatherData(city: String, temperature: String, condition: String) {
+    func updateWeatherData(city: String?, temperature: String?, condition: String?) {
         weatherReviewView.updateWeatherData(city: city, temperature: temperature, condition: condition)
     }
 }
@@ -59,7 +59,7 @@ class WeatherReviewView: UIView {
         setupWeatherConditionLabel()
     }
     
-    fileprivate func updateWeatherData(city: String, temperature: String, condition: String) {
+    fileprivate func updateWeatherData(city: String?, temperature: String?, condition: String?) {
         self.cityLabel.text = city
         self.temperatureLabel.text = temperature
         self.weatherConditionLabel.text = condition

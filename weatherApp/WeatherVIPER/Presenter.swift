@@ -18,6 +18,9 @@ protocol AnyPresenter {
     
     func fetchWeather(_ location: UserLocation)
     func interactorDidFetchWeather(with result: Result<Weather, Error>?)
+    
+    func exploreForecast(_ location: UserLocation, days: Int)
+    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?)
 }
 
 class WeatherPresenter: AnyPresenter {
@@ -40,6 +43,19 @@ class WeatherPresenter: AnyPresenter {
     
     func fetchWeather(_ location: UserLocation) {
         interactor?.getWeather(for: location)
+    }
+    
+    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?) {
+        switch result {
+        case .success(let forecast):
+            view?.updateForecastWeahter(with: forecast)
+        default:
+            view?.updateWeahterWithError(with: nil)
+        }
+    }
+    
+    func exploreForecast(_ location: UserLocation, days: Int = 10) {
+        interactor?.getWeatherForecast(for: location, days: days)
     }
     
 }
