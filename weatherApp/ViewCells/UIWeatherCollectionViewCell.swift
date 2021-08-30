@@ -30,14 +30,14 @@ class UIWeatherCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func updateWeatherData(city: String?, temperature: String?, condition: String?) {
-        weatherReviewView.updateWeatherData(city: city, temperature: temperature, condition: condition)
+    func updateWeatherData(_ forecast: ForecastDay?) {
+        weatherReviewView.updateWeatherData(forecast: forecast)
     }
 }
 
 class WeatherReviewView: UIView {
     
-    private let cityLabel: UILabel = UILabel()
+    private let dayOfWeekLabel: UILabel = UILabel()
     private let temperatureLabel: UILabel = UILabel()
     private let weatherConditionLabel: UILabel = UILabel()
     
@@ -59,27 +59,27 @@ class WeatherReviewView: UIView {
         setupWeatherConditionLabel()
     }
     
-    fileprivate func updateWeatherData(city: String?, temperature: String?, condition: String?) {
-        self.cityLabel.text = city
-        self.temperatureLabel.text = temperature
-        self.weatherConditionLabel.text = condition
+    fileprivate func updateWeatherData(forecast: ForecastDay?) {
+        guard let forecast = forecast else { return }
+        self.dayOfWeekLabel.text = forecast.date
+        self.temperatureLabel.text = "\(forecast.day.avgtemp_c)"
+        self.weatherConditionLabel.text = forecast.day.condition.weatherTitle
     }
     
     private func setupCityLabel() {
-        self.addSubview(cityLabel)
-        cityLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(50)
+        self.addSubview(dayOfWeekLabel)
+        dayOfWeekLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(10)
         }
     }
     
     private func setupTemperatureLabel() {
         self.addSubview(temperatureLabel)
         temperatureLabel.snp.makeConstraints { make in
-            make.top.equalTo(cityLabel.snp.bottom)
+            make.top.equalTo(dayOfWeekLabel.snp.bottom)
             make.centerX.equalToSuperview()
-            make.height.width.equalTo(50)
+            make.height.equalTo(50)
         }
     }
     
@@ -88,7 +88,7 @@ class WeatherReviewView: UIView {
         weatherConditionLabel.snp.makeConstraints { make in
             make.top.equalTo(temperatureLabel.snp.bottom)
             make.centerX.equalToSuperview()
-            make.height.width.equalTo(50)
+            make.height.equalTo(50)
         }
     }
 }

@@ -214,7 +214,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
             return cell
         case .weatherInfo:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: dailyWeatherCollectionViewCellId, for: indexPath) as! UIWeatherCollectionViewCell
-            cell.updateWeatherData(city: forecast?.location.locationName, temperature: NSDecimalNumber(decimal: (self.forecast?.forecast.forecastday[indexPath.row].day.avgtemp_c) ?? 0.0).stringValue, condition: forecast?.forecast.forecastday[indexPath.row].day.condition.weatherTitle)
+            cell.updateWeatherData(forecast?.forecast.forecastday[indexPath.row])
             return cell
         }
     }
