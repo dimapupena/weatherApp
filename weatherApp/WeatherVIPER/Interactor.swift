@@ -10,62 +10,69 @@ import Alamofire
 
 protocol AnyInteractor {
     var presenter: AnyPresenter? { get set }
-    
+}
+
+protocol AnyWeatherInteractor: AnyInteractor {
     func getWeather(for location: UserLocation)
     func getWeatherForecast(for location: UserLocation, days: Int)
 }
 
-class WeatherInteractor: AnyInteractor {
+class WeatherInteractor: AnyWeatherInteractor {
     var presenter: AnyPresenter?
     
     func getWeather(for location: UserLocation) {
-        guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, resolvingAgainstBaseURL: false) else { self.presenter?.interactorDidFetchWeather(with: nil); return }
-        
-        var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
-        finalUrl?.queryItems = [URLQueryItem]()
-        finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
-        AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
-            let decoder = JSONDecoder()
+        if let weatherPresenter = presenter as? AnyWeatherPresenter {
+            guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, resolvingAgainstBaseURL: false) else {weatherPresenter.interactorDidFetchWeather(with: nil); return }
             
-            switch response.result {
-            case .success:
-                do {
-                    // cannot pars it((
-                    let resultWeather = try decoder.decode(Weather.self, from: response.data!)
-                    self.presenter?.interactorDidFetchWeather(with: .success(resultWeather))
-                } catch {
-                    self.presenter?.interactorDidFetchWeather(with: nil)
+            var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
+            finalUrl?.queryItems = [URLQueryItem]()
+            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
+            AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
+                let decoder = JSONDecoder()
+                
+                switch response.result {
+                case .success:
+                    do {
+                        // cannot pars it((
+                        let resultWeather = try decoder.decode(Weather.self, from: response.data!)
+                        weatherPresenter.interactorDidFetchWeather(with: .success(resultWeather))
+                    } catch {
+                        weatherPresenter.interactorDidFetchWeather(with: nil)
+                        print("error")
+                    }
+                    print("success")
+                default:
+                    weatherPresenter.interactorDidFetchWeather(with: nil)
                     print("error")
                 }
-                print("success")
-            default:
-                self.presenter?.interactorDidFetchWeather(with: nil)
-                print("error")
             }
         }
     }
     
     func getWeatherForecast(for location: UserLocation, days: Int) {
-        guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url)!, resolvingAgainstBaseURL: false) else { return }
-        var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
-        finalUrl?.queryItems = [URLQueryItem]()
-        finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
-        finalUrl?.queryItems?.append(URLQueryItem(name: "days", value: "10"))
-        
-        AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
-            let decoder = JSONDecoder()
+        if let weatherPresenter = presenter as? AnyWeatherPresenter {
+            guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url)!, resolvingAgainstBaseURL: false) else { return }
+            var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
+            finalUrl?.queryItems = [URLQueryItem]()
+            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
+            finalUrl?.queryItems?.append(URLQueryItem(name: "days", value: "10"))
             
-            switch response.result {
-            case .success:
-                do {
-                    let resultForecast = try decoder.decode(ForecastWeather.self, from: response.data!)
-                    self.presenter?.interactorDidExploreForecast(with: .success(resultForecast))
-                } catch  {
-                    self.presenter?.interactorDidExploreForecast(with: nil)
+            AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
+                let decoder = JSONDecoder()
+                
+                switch response.result {
+                case .success:
+                    do {
+                        let resultForecast = try decoder.decode(ForecastWeather.self, from: response.data!)
+                        weatherPresenter.interactorDidExploreForecast(with: .success(resultForecast))
+                    } catch  {
+                        weatherPresenter.interactorDidExploreForecast(with: nil)
+                    }
+                default:
+                    weatherPresenter.interactorDidExploreForecast(with: nil)
                 }
-            default:
-                self.presenter?.interactorDidExploreForecast(with: nil)
             }
+
         }
     }
 }

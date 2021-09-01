@@ -19,15 +19,20 @@ protocol AnyRouter {
     static func start() -> AnyRouter
 }
 
-class WeatherRouter: AnyRouter {
+protocol AnyWeatherRouter: AnyRouter {
+
+}
+
+class WeatherRouter: AnyWeatherRouter {
     var entryViewController: EntryPoint?
     
     static func start() -> AnyRouter {
         let router = WeatherRouter()
         
         var view: AnyView = WeatherViewController()
-        var presenter: AnyPresenter = WeatherPresenter()
+        var presenter: AnyWeatherPresenter = WeatherPresenter()
         var interactor: AnyInteractor = WeatherInteractor()
+        let locationManager: Locationable = LocationManager()
         
         view.presenter = presenter
         
@@ -36,6 +41,10 @@ class WeatherRouter: AnyRouter {
         presenter.router = router
         presenter.view = view
         presenter.interactor = interactor
+        
+        if let weatherPresenter = presenter as? WeatherPresenter {
+            weatherPresenter.locationable = locationManager
+        }
         
         router.entryViewController = view as? EntryPoint
         

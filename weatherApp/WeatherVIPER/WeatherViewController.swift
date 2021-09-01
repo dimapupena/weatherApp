@@ -25,13 +25,15 @@ enum CollectionViewType {
 
 protocol AnyView {
     var presenter: AnyPresenter? { get set }
-    
+}
+
+protocol AnyWeatherView: AnyView {
     func updateWeahter(with weather: Weather?)
     func updateForecastWeahter(with forecast: ForecastWeather?)
     func updateWeahterWithError(with error: Error?)
 }
 
-class WeatherViewController: UIViewController, AnyView {
+class WeatherViewController: UIViewController, AnyWeatherView {
     var presenter: AnyPresenter?
     
     let dailyWeatherCollectionViewCellId = "weatherCell"
@@ -95,6 +97,11 @@ class WeatherViewController: UIViewController, AnyView {
         setupLocationsCollectionView()
         setupDailyWeatherCollectionView()
         setupWeatherDetailsView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let presenter = presenter as? WeatherPresenter else { return }
+        presenter.locationable?.requestPermission()
     }
     
     private func setupTextField() {
@@ -183,15 +190,16 @@ class WeatherViewController: UIViewController, AnyView {
     
     @objc private func searchButtonClicked() {
         print("fetching data")
+        guard let presenter = presenter as? AnyWeatherPresenter else { return }
         let location = UserLocation(Name: searchTextField.text!)
-        self.presenter?.fetchWeather(location)
-        self.presenter?.exploreForecast(location, days: 10)
+        presenter.fetchWeather(location)
+        presenter.exploreForecast(location, days: 10)
     }
     
     private func changeWeather(to location: UserLocation?) {
-        guard let location = location else { return }
-        self.presenter?.fetchWeather(location)
-        self.presenter?.exploreForecast(location, days: 10)
+        guard let location = location, let presenter = presenter as? AnyWeatherPresenter else { return }
+        presenter.fetchWeather(location)
+        presenter.exploreForecast(location, days: 10)
     }
 }
 

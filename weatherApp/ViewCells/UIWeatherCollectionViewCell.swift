@@ -51,8 +51,11 @@ class WeatherReviewView: UIView {
     }
     
     private func setupViews() {
-        self.backgroundColor = .red
+        self.backgroundColor = UIColor(red: 125, green: 181, blue: 172)
         self.layer.cornerRadius = 20
+        self.clipsToBounds = true
+        self.layer.borderWidth = 3
+        self.layer.borderColor = CGColor(red: 27/255, green: 80/255, blue: 194/255, alpha: 1.0)
         
         setupCityLabel()
         setupTemperatureLabel()
