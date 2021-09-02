@@ -30,6 +30,7 @@ protocol AnyView {
 protocol AnyWeatherView: AnyView {
     func updateWeahter(with weather: Weather?)
     func updateForecastWeahter(with forecast: ForecastWeather?)
+    func locationWasUpdated(to location: UserLocation)
     func updateWeahterWithError(with error: Error?)
 }
 
@@ -100,8 +101,7 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        guard let presenter = presenter as? WeatherPresenter else { return }
-        presenter.locationable?.requestPermission()
+        self.handleLocationPermission()
     }
     
     private func setupTextField() {
@@ -180,6 +180,12 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         print("update view with error")
     }
     
+    func locationWasUpdated(to location: UserLocation) {
+        guard let presenter = presenter as? AnyWeatherPresenter else { return }
+        print("NEW location: \(location.city)")
+        self.changeWeather(for: location)
+    }
+    
     private func getCollectionType(_ view: UICollectionView) -> CollectionViewType {
         if view == locationsCollectionView {
             return .oftenLocation
@@ -191,15 +197,35 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     @objc private func searchButtonClicked() {
         print("fetching data")
         guard let presenter = presenter as? AnyWeatherPresenter else { return }
-        let location = UserLocation(Name: searchTextField.text!)
+        let location = UserLocation(city: searchTextField.text!)
         presenter.fetchWeather(location)
         presenter.exploreForecast(location, days: 10)
     }
     
-    private func changeWeather(to location: UserLocation?) {
+    private func changeWeather(for location: UserLocation?) {
         guard let location = location, let presenter = presenter as? AnyWeatherPresenter else { return }
         presenter.fetchWeather(location)
         presenter.exploreForecast(location, days: 10)
+    }
+    
+    private func handleLocationPermission() {
+        guard let presenter = presenter as? WeatherPresenter else { return }
+        presenter.locationable?.requestPermission()
+//        guard let presenter = presenter as? WeatherPresenter else { return }
+//        let status = presenter.locationable?.checkUserPermission()
+//        switch status {
+//        case .authorizedAlways:
+//            break
+//        case .authorizedWhenInUse:
+//            break
+//        case .denied:
+//            break
+//        case .notDetermined:
+//            presenter.locationable?.requestPermission()
+//        default:
+//            break
+//
+//        }
     }
 }
 
@@ -244,7 +270,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
         switch getCollectionType(collectionView) {
         case .oftenLocation:
             let cell = collectionView.cellForItem(at: indexPath) as? UILocationCollectionViewCell
-            self.changeWeather(to: cell?.getLocation())
+            self.changeWeather(for: cell?.getLocation())
             print("oftenLocation action", indexPath.row)
         case .weatherInfo:
             print("weatherInfo action", indexPath.row)

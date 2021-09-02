@@ -8,9 +8,9 @@
 import Foundation
 
 struct UserLocation {
-    let Name: String
+    let city: String
     
-    init(Name: String) {
-        self.Name = Name
+    init(city: String) {
+        self.city = city
     }
 }

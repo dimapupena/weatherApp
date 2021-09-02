@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6D22B52E26E161FD0085E302 /* CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B52D26E161FD0085E302 /* CoreLocation.swift */; };
 		6D6F3EB0268A00FB007FCB0D /* WeatherDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */; };
 		6D9B20CC26DA5DF0003487FC /* UILocationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */; };
 		6D9B20CF26DA7322003487FC /* WeatherLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CE26DA7322003487FC /* WeatherLocation.swift */; };
@@ -30,6 +31,7 @@
 
 /* Begin PBXFileReference section */
 		35DE7744D2DDB597598005B2 /* Pods-weatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.debug.xcconfig"; path = "Target Support Files/Pods-weatherApp/Pods-weatherApp.debug.xcconfig"; sourceTree = "<group>"; };
+		6D22B52D26E161FD0085E302 /* CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLocation.swift; sourceTree = "<group>"; };
 		6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailsView.swift; sourceTree = "<group>"; };
 		6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILocationCollectionViewCell.swift; sourceTree = "<group>"; };
 		6D9B20CE26DA7322003487FC /* WeatherLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherLocation.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 		6D9B20DD26E01465003487FC /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				6DBC3DD5268328AA00AA3DFF /* Extensions */,
 				6D9B20DA26E0122F003487FC /* Managers */,
 			);
 			path = Helpers;
@@ -123,7 +126,6 @@
 				6D9B20CD26DA72F4003487FC /* Model */,
 				6DBC3DD9268332FB00AA3DFF /* WeatherResponse */,
 				6DBC3DD8268332EE00AA3DFF /* WeatherRequests */,
-				6DBC3DD5268328AA00AA3DFF /* Extensions */,
 				6DBC3DD12683246400AA3DFF /* WeatherAPIHelper */,
 				6D6F3EAE268A00D8007FCB0D /* Views */,
 				6DBC3DDC2685C7EA00AA3DFF /* ViewCells */,
@@ -161,6 +163,7 @@
 			children = (
 				6DBC3DD6268328C500AA3DFF /* UIExentions.swift */,
 				6D9B20D226DB853F003487FC /* NotificationCenter.swift */,
+				6D22B52D26E161FD0085E302 /* CoreLocation.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				6DBC3DB426821D9D00AA3DFF /* SceneDelegate.swift in Sources */,
 				6D9B20D326DB853F003487FC /* NotificationCenter.swift in Sources */,
 				6DBC3DD7268328C500AA3DFF /* UIExentions.swift in Sources */,
+				6D22B52E26E161FD0085E302 /* CoreLocation.swift in Sources */,
 				6D9B20CF26DA7322003487FC /* WeatherLocation.swift in Sources */,
 				6DBC3DC926821EB000AA3DFF /* Presenter.swift in Sources */,
 				6D9B20CC26DA5DF0003487FC /* UILocationCollectionViewCell.swift in Sources */,

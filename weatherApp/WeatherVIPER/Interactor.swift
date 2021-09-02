@@ -26,7 +26,7 @@ class WeatherInteractor: AnyWeatherInteractor {
             
             var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
             finalUrl?.queryItems = [URLQueryItem]()
-            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
+            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.city))
             AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
                 let decoder = JSONDecoder()
                 
@@ -54,7 +54,7 @@ class WeatherInteractor: AnyWeatherInteractor {
             guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url)!, resolvingAgainstBaseURL: false) else { return }
             var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
             finalUrl?.queryItems = [URLQueryItem]()
-            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.Name))
+            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.city))
             finalUrl?.queryItems?.append(URLQueryItem(name: "days", value: "10"))
             
             AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in

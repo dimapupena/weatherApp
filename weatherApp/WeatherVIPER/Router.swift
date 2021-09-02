@@ -44,6 +44,7 @@ class WeatherRouter: AnyWeatherRouter {
         
         if let weatherPresenter = presenter as? WeatherPresenter {
             weatherPresenter.locationable = locationManager
+            weatherPresenter.setupListeners()
         }
         
         router.entryViewController = view as? EntryPoint

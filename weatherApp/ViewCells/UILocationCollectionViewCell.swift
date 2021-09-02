@@ -13,7 +13,7 @@ class UILocationCollectionViewCell: UICollectionViewCell {
     
     private var location: UserLocation? {
         didSet {
-            locationName.text = location?.Name
+            locationName.text = location?.city
         }
     }
     
@@ -35,7 +35,7 @@ class UILocationCollectionViewCell: UICollectionViewCell {
     }
     
     func updateData(location: String) {
-        self.location = UserLocation(Name: location)
+        self.location = UserLocation(city: location)
     }
     
     func getLocation() -> UserLocation? {

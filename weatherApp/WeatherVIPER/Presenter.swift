@@ -23,6 +23,8 @@ protocol AnyWeatherPresenter: AnyPresenter {
     
     func exploreForecast(_ location: UserLocation, days: Int)
     func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?)
+    
+    func exploredLocaiton(location: UserLocation)
 }
 
 class WeatherPresenter: AnyWeatherPresenter {
@@ -32,6 +34,10 @@ class WeatherPresenter: AnyWeatherPresenter {
     var locationable: Locationable?
     
     var view: AnyView?
+    
+    func setupListeners() {
+        self.locationable?.delegate = self
+    }
     
     func interactorDidFetchWeather(with result: Result<Weather, Error>?) {
         guard let view = view as? AnyWeatherView else { return }
@@ -65,4 +71,15 @@ class WeatherPresenter: AnyWeatherPresenter {
         interactor.getWeatherForecast(for: location, days: days)
     }
     
+    func exploredLocaiton(location: UserLocation) {
+        guard let view = view as? AnyWeatherView else { return }
+        view.locationWasUpdated(to: location)
+    }
+    
+}
+
+extension WeatherPresenter: LocationManagerDelegate {
+    func locationWasUpdated(to location: UserLocation) {
+        self.exploredLocaiton(location: location)
+    }
 }
