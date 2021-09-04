@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		6D22B52E26E161FD0085E302 /* CoreLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B52D26E161FD0085E302 /* CoreLocation.swift */; };
+		6D22B53026E2B3F60085E302 /* CitiesApiParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B52F26E2B3F60085E302 /* CitiesApiParameters.swift */; };
+		6D22B53226E2B42B0085E302 /* APIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B53126E2B42B0085E302 /* APIHelpers.swift */; };
+		6D22B53426E2CCA90085E302 /* WeatherRequestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B53326E2CCA90085E302 /* WeatherRequestsHelper.swift */; };
 		6D6F3EB0268A00FB007FCB0D /* WeatherDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */; };
 		6D9B20CC26DA5DF0003487FC /* UILocationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */; };
 		6D9B20CF26DA7322003487FC /* WeatherLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CE26DA7322003487FC /* WeatherLocation.swift */; };
@@ -32,6 +35,9 @@
 /* Begin PBXFileReference section */
 		35DE7744D2DDB597598005B2 /* Pods-weatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.debug.xcconfig"; path = "Target Support Files/Pods-weatherApp/Pods-weatherApp.debug.xcconfig"; sourceTree = "<group>"; };
 		6D22B52D26E161FD0085E302 /* CoreLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreLocation.swift; sourceTree = "<group>"; };
+		6D22B52F26E2B3F60085E302 /* CitiesApiParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitiesApiParameters.swift; sourceTree = "<group>"; };
+		6D22B53126E2B42B0085E302 /* APIHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIHelpers.swift; sourceTree = "<group>"; };
+		6D22B53326E2CCA90085E302 /* WeatherRequestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRequestsHelper.swift; sourceTree = "<group>"; };
 		6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailsView.swift; sourceTree = "<group>"; };
 		6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILocationCollectionViewCell.swift; sourceTree = "<group>"; };
 		6D9B20CE26DA7322003487FC /* WeatherLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherLocation.swift; sourceTree = "<group>"; };
@@ -153,7 +159,9 @@
 		6DBC3DD12683246400AA3DFF /* WeatherAPIHelper */ = {
 			isa = PBXGroup;
 			children = (
+				6D22B53126E2B42B0085E302 /* APIHelpers.swift */,
 				6DBC3DD22683248200AA3DFF /* WeatherAPIParameters.swift */,
+				6D22B52F26E2B3F60085E302 /* CitiesApiParameters.swift */,
 			);
 			path = WeatherAPIHelper;
 			sourceTree = "<group>";
@@ -171,6 +179,7 @@
 		6DBC3DD8268332EE00AA3DFF /* WeatherRequests */ = {
 			isa = PBXGroup;
 			children = (
+				6D22B53326E2CCA90085E302 /* WeatherRequestsHelper.swift */,
 			);
 			path = WeatherRequests;
 			sourceTree = "<group>";
@@ -336,10 +345,13 @@
 				6DBC3DB426821D9D00AA3DFF /* SceneDelegate.swift in Sources */,
 				6D9B20D326DB853F003487FC /* NotificationCenter.swift in Sources */,
 				6DBC3DD7268328C500AA3DFF /* UIExentions.swift in Sources */,
+				6D22B53026E2B3F60085E302 /* CitiesApiParameters.swift in Sources */,
+				6D22B53426E2CCA90085E302 /* WeatherRequestsHelper.swift in Sources */,
 				6D22B52E26E161FD0085E302 /* CoreLocation.swift in Sources */,
 				6D9B20CF26DA7322003487FC /* WeatherLocation.swift in Sources */,
 				6DBC3DC926821EB000AA3DFF /* Presenter.swift in Sources */,
 				6D9B20CC26DA5DF0003487FC /* UILocationCollectionViewCell.swift in Sources */,
+				6D22B53226E2B42B0085E302 /* APIHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +492,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 799K37S9XB;
 				INFOPLIST_FILE = weatherApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -499,6 +512,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 799K37S9XB;
 				INFOPLIST_FILE = weatherApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

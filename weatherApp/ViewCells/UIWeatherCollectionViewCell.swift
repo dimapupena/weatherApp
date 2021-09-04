@@ -30,14 +30,15 @@ class UIWeatherCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func updateWeatherData(_ forecast: ForecastDay?) {
-        weatherReviewView.updateWeatherData(forecast: forecast)
+    func updateWeatherData(_ forecast: ForecastDay?, location: Location?) {
+        weatherReviewView.updateWeatherData(forecast: forecast, location: location)
     }
 }
 
 class WeatherReviewView: UIView {
     
     private let dayOfWeekLabel: UILabel = UILabel()
+    private let locationNameLabel: UILabel = UILabel()
     private let temperatureLabel: UILabel = UILabel()
     private let weatherConditionLabel: UILabel = UILabel()
     
@@ -57,23 +58,33 @@ class WeatherReviewView: UIView {
         self.layer.borderWidth = 3
         self.layer.borderColor = CGColor(red: 27/255, green: 80/255, blue: 194/255, alpha: 1.0)
         
-        setupCityLabel()
+        setupDayOfWeekLabel()
+        setupLocationNameLabel()
         setupTemperatureLabel()
         setupWeatherConditionLabel()
     }
     
-    fileprivate func updateWeatherData(forecast: ForecastDay?) {
+    fileprivate func updateWeatherData(forecast: ForecastDay?, location: Location?) {
         guard let forecast = forecast else { return }
         self.dayOfWeekLabel.text = forecast.date
+        self.locationNameLabel.text = location?.locationName
         self.temperatureLabel.text = "\(forecast.day.avgtemp_c)"
         self.weatherConditionLabel.text = forecast.day.condition.weatherTitle
     }
     
-    private func setupCityLabel() {
+    private func setupDayOfWeekLabel() {
         self.addSubview(dayOfWeekLabel)
         dayOfWeekLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview().offset(10)
+        }
+    }
+    
+    private func setupLocationNameLabel() {
+        self.addSubview(locationNameLabel)
+        locationNameLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().inset(10)
         }
     }
     

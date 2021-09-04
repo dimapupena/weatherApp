@@ -8,26 +8,26 @@
 import Foundation
 import Alamofire
 
-protocol AnyInteractor {
+protocol AnyInteractor: AnyObject {
     var presenter: AnyPresenter? { get set }
 }
 
 protocol AnyWeatherInteractor: AnyInteractor {
     func getWeather(for location: UserLocation)
     func getWeatherForecast(for location: UserLocation, days: Int)
+    func getNearbyCities(_ parameters: ParametersFindCitiesNearby)
 }
 
-class WeatherInteractor: AnyWeatherInteractor {
+class WeatherInteractor: AnyWeatherInteractor, WorkWithAPI {
     var presenter: AnyPresenter?
     
     func getWeather(for location: UserLocation) {
         if let weatherPresenter = presenter as? AnyWeatherPresenter {
-            guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, resolvingAgainstBaseURL: false) else {weatherPresenter.interactorDidFetchWeather(with: nil); return }
-            
-            var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
-            finalUrl?.queryItems = [URLQueryItem]()
-            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.city))
-            AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
+            guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, parameters: ["q" : "\(location.city)"]) else {
+                weatherPresenter.interactorDidFetchWeather(with: nil)
+                return
+            }
+            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
                 let decoder = JSONDecoder()
                 
                 switch response.result {
@@ -51,13 +51,13 @@ class WeatherInteractor: AnyWeatherInteractor {
     
     func getWeatherForecast(for location: UserLocation, days: Int) {
         if let weatherPresenter = presenter as? AnyWeatherPresenter {
-            guard let urlComponents = URLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url)!, resolvingAgainstBaseURL: false) else { return }
-            var finalUrl = URLComponents(url: urlComponents.url!, resolvingAgainstBaseURL: false)
-            finalUrl?.queryItems = [URLQueryItem]()
-            finalUrl?.queryItems?.append(URLQueryItem(name: "q", value: location.city))
-            finalUrl?.queryItems?.append(URLQueryItem(name: "days", value: "10"))
+            let parameters: [String: String] = ["q" : "\(location.city)",
+                                              "days" : "10"]
+            guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url!), parameters: parameters) else {
+                return
+            }
             
-            AF.request(finalUrl?.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
+            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
                 let decoder = JSONDecoder()
                 
                 switch response.result {
@@ -73,6 +73,29 @@ class WeatherInteractor: AnyWeatherInteractor {
                 }
             }
 
+        }
+    }
+    
+    func getNearbyCities(_ parameters: ParametersFindCitiesNearby) {
+        if let presenter = presenter as? AnyWeatherPresenter {
+            let parameters: [String : String] =   ["latitude" : "\(parameters.latitude)",
+                                                   "longitude" : "\(parameters.longitude)",
+                                                   "radius" : "\(String(describing: parameters.radius ?? 0))",
+                                                   "min_population" : "\(String(describing: parameters.minPopulation ?? 0))",
+                                                   "max_population" : "\(String(describing: parameters.maxPopulation ?? 0))"]
+            guard let urlComponents = getURLComponents(url: CitiesApiParameters.Endpoints.citiesNearby.url!, parameters: parameters)  else { return }
+            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: CitiesApiParameters.headers).validate().responseJSON { response in
+                switch response.result {
+                case .success:
+                    do {
+                        let data = try JSONSerialization.jsonObject(with: response.data!, options: [])
+                    } catch {
+                        
+                    }
+                default:
+                    break
+                }
+            }
         }
     }
 }

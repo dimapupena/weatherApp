@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 // Object
 // protocol
@@ -24,7 +25,10 @@ protocol AnyWeatherPresenter: AnyPresenter {
     func exploreForecast(_ location: UserLocation, days: Int)
     func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?)
     
-    func exploredLocaiton(location: UserLocation)
+    func exploreNearbyCities(_ parameters: ParametersFindCitiesNearby)
+    func interactorHasExploredNearbyCities(cities: [String])
+
+    func exploredLocaiton(location: UserLocation, locationData: CLLocation?)
 }
 
 class WeatherPresenter: AnyWeatherPresenter {
@@ -71,15 +75,30 @@ class WeatherPresenter: AnyWeatherPresenter {
         interactor.getWeatherForecast(for: location, days: days)
     }
     
-    func exploredLocaiton(location: UserLocation) {
+    func exploreNearbyCities(_ parameters: ParametersFindCitiesNearby) {
+        guard let interactor = interactor as? AnyWeatherInteractor else { return }
+        interactor.getNearbyCities(parameters)
+    }
+    
+    func interactorHasExploredNearbyCities(cities: [String]) {
+        guard let view = view as? AnyWeatherView else { return }
+        view.updateNearbyCities(cities: cities)
+    }
+    
+    
+    func exploredLocaiton(location: UserLocation, locationData: CLLocation?) {
         guard let view = view as? AnyWeatherView else { return }
         view.locationWasUpdated(to: location)
+        if let locationData = locationData {
+            let findCitiesParameters = ParametersFindCitiesNearby(latitude: Decimal(locationData.coordinate.latitude), longitude: Decimal(locationData.coordinate.longitude), radius: 100, minPopulation: 50000, maxPopulation: 100000000)
+            self.exploreNearbyCities(findCitiesParameters)
+        }
     }
     
 }
 
 extension WeatherPresenter: LocationManagerDelegate {
-    func locationWasUpdated(to location: UserLocation) {
-        self.exploredLocaiton(location: location)
+    func locationWasUpdated(to location: UserLocation, locationData: CLLocation?) {
+        self.exploredLocaiton(location: location, locationData: locationData)
     }
 }

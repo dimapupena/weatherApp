@@ -8,8 +8,8 @@
 import Foundation
 import Alamofire
 
-class WeatherAPIParameters {
-    static let headers: HTTPHeaders = [
+class WeatherAPIParameters: ApiParameters {
+    static var headers: HTTPHeaders = [
         "x-rapidapi-key": "42ba417793mshf26515243e5ac15p15ebc3jsne8dc5a9d8ab5",
         "x-rapidapi-host": "weatherapi-com.p.rapidapi.com"
     ]

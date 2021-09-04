@@ -32,6 +32,7 @@ protocol AnyWeatherView: AnyView {
     func updateForecastWeahter(with forecast: ForecastWeather?)
     func locationWasUpdated(to location: UserLocation)
     func updateWeahterWithError(with error: Error?)
+    func updateNearbyCities(cities: [String])
 }
 
 class WeatherViewController: UIViewController, AnyWeatherView {
@@ -39,8 +40,9 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     
     let dailyWeatherCollectionViewCellId = "weatherCell"
     let locationsCollectionViewCellId = "locationCell"
-    let startLocation: String = "Boyarka"
+
     var forecast: ForecastWeather?
+    var nearbyCities: String? = ""
     
     private let searchTextField: UITextField = {
         let textField = UITextField()
@@ -186,6 +188,14 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         self.changeWeather(for: location)
     }
     
+    func updateNearbyCities(cities: [String]) {
+        self.locationsCollectionView.reloadData()
+    }
+    
+    private func notifyAboutDeniedLocationPerm() {
+        print("don't have permission for location")
+    }
+    
     private func getCollectionType(_ view: UICollectionView) -> CollectionViewType {
         if view == locationsCollectionView {
             return .oftenLocation
@@ -210,22 +220,20 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     
     private func handleLocationPermission() {
         guard let presenter = presenter as? WeatherPresenter else { return }
-        presenter.locationable?.requestPermission()
-//        guard let presenter = presenter as? WeatherPresenter else { return }
-//        let status = presenter.locationable?.checkUserPermission()
-//        switch status {
-//        case .authorizedAlways:
-//            break
-//        case .authorizedWhenInUse:
-//            break
-//        case .denied:
-//            break
-//        case .notDetermined:
-//            presenter.locationable?.requestPermission()
-//        default:
-//            break
-//
-//        }
+        let status = presenter.locationable?.checkUserPermission()
+        switch status {
+        case .authorizedAlways:
+            presenter.locationable?.updateUserLocation()
+        case .authorizedWhenInUse:
+            presenter.locationable?.updateUserLocation()
+        case .denied:
+            notifyAboutDeniedLocationPerm()
+        case .notDetermined:
+            presenter.locationable?.requestPermission()
+        default:
+            presenter.locationable?.requestPermission()
+
+        }
     }
 }
 
@@ -248,7 +256,7 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
             return cell
         case .weatherInfo:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: dailyWeatherCollectionViewCellId, for: indexPath) as! UIWeatherCollectionViewCell
-            cell.updateWeatherData(forecast?.forecast.forecastday[indexPath.row])
+            cell.updateWeatherData(forecast?.forecast.forecastday[indexPath.row], location: forecast?.location)
             return cell
         }
     }
