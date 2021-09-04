@@ -1,5 +1,5 @@
 //
-//  Presenter.swift
+//  WeatherPresenter.swift
 //  weatherApp
 //
 //  Created by Dmytro Pupena on 22.06.2021.
@@ -7,16 +7,6 @@
 
 import Foundation
 import CoreLocation
-
-// Object
-// protocol
-// ref  to interactor, router, view
-
-protocol AnyPresenter {
-    var router: AnyRouter? { get set }
-    var interactor: AnyInteractor? { get set }
-    var view: AnyView? { get set }
-}
 
 protocol AnyWeatherPresenter: AnyPresenter {
     func fetchWeather(_ location: UserLocation)

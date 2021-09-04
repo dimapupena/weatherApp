@@ -1,5 +1,5 @@
 //
-//  Interactor.swift
+//  WeatherInteractor.swift
 //  weatherApp
 //
 //  Created by Dmytro Pupena on 22.06.2021.
@@ -7,10 +7,6 @@
 
 import Foundation
 import Alamofire
-
-protocol AnyInteractor: AnyObject {
-    var presenter: AnyPresenter? { get set }
-}
 
 protocol AnyWeatherInteractor: AnyInteractor {
     func getWeather(for location: UserLocation)

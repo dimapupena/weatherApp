@@ -1,5 +1,5 @@
 //
-//  Router.swift
+//  WeatherRouter.swift
 //  weatherApp
 //
 //  Created by Dmytro Pupena on 22.06.2021.
@@ -7,17 +7,6 @@
 
 import Foundation
 import UIKit
-
-// Object
-// Entry point
-
-typealias EntryPoint = AnyView & UIViewController
-
-protocol AnyRouter {
-    var entryViewController: EntryPoint? { get }
-    
-    static func start() -> AnyRouter
-}
 
 protocol AnyWeatherRouter: AnyRouter {
 

@@ -44,6 +44,12 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     var forecast: ForecastWeather?
     var nearbyCities: String? = ""
     
+    private let settingsImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "settings")
+        return imageView
+    }()
+    
     private let searchTextField: UITextField = {
         let textField = UITextField()
         textField.clipsToBounds = true
@@ -95,6 +101,7 @@ class WeatherViewController: UIViewController, AnyWeatherView {
 
         self.view.backgroundColor = UIColor(red: 191, green: 181, blue: 180)
         
+        setupSettingsImageView()
         setupTextField()
         setupSearchButton()
         setupLocationsCollectionView()
@@ -106,11 +113,20 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         self.handleLocationPermission()
     }
     
+    private func setupSettingsImageView() {
+        self.view.addSubview(settingsImageView)
+        settingsImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(20)
+            make.top.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+            make.width.height.equalTo(50)
+        }
+    }
+    
     private func setupTextField() {
         self.view.addSubview(searchTextField)
         searchTextField.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
-            make.leading.equalToSuperview().inset(20)
+            make.top.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+            make.leading.equalTo(settingsImageView.snp.trailing).offset(10)
             make.height.equalTo(50)
         }
     }
