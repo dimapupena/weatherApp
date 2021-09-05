@@ -13,6 +13,8 @@ protocol AnyWeatherRouter: AnyRouter {
 }
 
 class WeatherRouter: AnyWeatherRouter {
+    var openSettingsBlock: (() -> Void)?
+        
     var entryViewController: EntryPoint?
     
     static func start() -> AnyRouter {

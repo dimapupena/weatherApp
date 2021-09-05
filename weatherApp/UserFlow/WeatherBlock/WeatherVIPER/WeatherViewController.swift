@@ -98,7 +98,7 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.view.backgroundColor = UIColor(red: 191, green: 181, blue: 180)
         
         setupSettingsImageView()
@@ -107,6 +107,8 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         setupLocationsCollectionView()
         setupDailyWeatherCollectionView()
         setupWeatherDetailsView()
+        
+        setupGestureRecognizers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -172,6 +174,20 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         weatherDetailsView.snp.makeConstraints { make in
             make.top.equalTo(dailyWeatherCollectionView.snp.bottom)
             make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+    
+    private func setupGestureRecognizers() {
+//        let rightSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
+//        rightSwipeGestureRecognizer.direction = .right
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSwipe))
+        settingsImageView.isUserInteractionEnabled = true
+        self.settingsImageView.addGestureRecognizer(gestureRecognizer)
+    }
+    
+    @objc func didSwipe() {
+        if let presenter = presenter as? WeatherPresenter {
+            presenter.openSettingsBlock()
         }
     }
     

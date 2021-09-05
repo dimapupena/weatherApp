@@ -85,6 +85,12 @@ class WeatherPresenter: AnyWeatherPresenter {
         }
     }
     
+    func openSettingsBlock()  {
+        if let router = router as? WeatherRouter {
+            router.openSettingsBlock?()
+        }
+    }
+    
 }
 
 extension WeatherPresenter: LocationManagerDelegate {
