@@ -21,7 +21,7 @@ class WeatherRouter: AnyWeatherRouter {
         let router = WeatherRouter()
         
         var view: AnyView = WeatherViewController()
-        var presenter: AnyWeatherPresenter = WeatherPresenter()
+        var presenter: AnyPresenter = WeatherPresenter()
         var interactor: AnyInteractor = WeatherInteractor()
         let locationManager: Locationable = LocationManager()
         

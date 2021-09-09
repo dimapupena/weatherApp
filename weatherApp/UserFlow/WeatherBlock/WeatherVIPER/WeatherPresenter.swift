@@ -19,6 +19,9 @@ protocol AnyWeatherPresenter: AnyPresenter {
     func interactorHasExploredNearbyCities(cities: [String])
 
     func exploredLocaiton(location: UserLocation, locationData: CLLocation?)
+    
+    func trySearchLocation(part: String)
+    func interactorFetchedSearchedLocations(with result: Result<[SearchLocation], Error>?)
 }
 
 class WeatherPresenter: AnyWeatherPresenter {
@@ -88,6 +91,21 @@ class WeatherPresenter: AnyWeatherPresenter {
     func openSettingsBlock()  {
         if let router = router as? WeatherRouter {
             router.openSettingsBlock?()
+        }
+    }
+    
+    func trySearchLocation(part: String) {
+        guard let interactor = interactor as? WeatherInteractor else { return }
+        interactor.searchLocationByPart(part)
+    }
+    
+    func interactorFetchedSearchedLocations(with result: Result<[SearchLocation], Error>?) {
+        guard let view = view as? AnyWeatherView else { return }
+        switch result {
+        case .success(let locations):
+            view.updateSearchedLocations(searchedLocations: locations)
+        default:
+            view.updateWeahterWithError(with: nil)
         }
     }
     

@@ -33,6 +33,7 @@ protocol AnyWeatherView: AnyView {
     func locationWasUpdated(to location: UserLocation)
     func updateWeahterWithError(with error: Error?)
     func updateNearbyCities(cities: [String])
+    func updateSearchedLocations(searchedLocations: [SearchLocation])
 }
 
 class WeatherViewController: UIViewController, AnyWeatherView {
@@ -50,13 +51,13 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         return imageView
     }()
     
-    private let searchTextField: UITextField = {
-        let textField = UITextField()
+    private let searchBar: UISearchBar = {
+        let textField = UISearchBar()
         textField.clipsToBounds = true
         textField.layer.cornerRadius = 15
         textField.placeholder = "Enter city name"
-        textField.textColor = .black
-        textField.textAlignment = .center
+//        textField.textColor = .black
+//        textField.textAlignment = .center
         textField.layer.borderColor = .init(red: 125, green: 22, blue: 15, alpha: 1.0)
         textField.layer.borderWidth = 2
         return textField
@@ -99,10 +100,9 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor(red: 191, green: 181, blue: 180)
-        
+        setupSelf()
         setupSettingsImageView()
-        setupTextField()
+        setupSearchBar()
         setupSearchButton()
         setupLocationsCollectionView()
         setupDailyWeatherCollectionView()
@@ -115,6 +115,18 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         self.handleLocationPermission()
     }
     
+    private func setupSelf() {
+        self.view.backgroundColor = UIColor(red: 191, green: 181, blue: 180)
+
+        let tapAnywhere = UIGestureRecognizer(target: self.weatherDetailsView, action: #selector(self.view.dismissKeyboad))
+        tapAnywhere.cancelsTouchesInView = false
+        self.weatherDetailsView.addGestureRecognizer(tapAnywhere)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
     private func setupSettingsImageView() {
         self.view.addSubview(settingsImageView)
         settingsImageView.snp.makeConstraints { make in
@@ -124,9 +136,10 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         }
     }
     
-    private func setupTextField() {
-        self.view.addSubview(searchTextField)
-        searchTextField.snp.makeConstraints { make in
+    private func setupSearchBar() {
+        self.view.addSubview(searchBar)
+        searchBar.delegate = self
+        searchBar.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide).inset(20)
             make.leading.equalTo(settingsImageView.snp.trailing).offset(10)
             make.height.equalTo(50)
@@ -136,9 +149,9 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     private func setupSearchButton() {
         self.view.addSubview(searchButton)
         searchButton.snp.makeConstraints { make in
-            make.top.bottom.equalTo(searchTextField)
+            make.top.bottom.equalTo(searchBar)
             make.trailing.equalToSuperview().inset(20)
-            make.leading.equalTo(searchTextField.snp.trailing).offset(20)
+            make.leading.equalTo(searchBar.snp.trailing).offset(20)
             make.width.equalTo(50)
         }
     }
@@ -224,6 +237,10 @@ class WeatherViewController: UIViewController, AnyWeatherView {
         self.locationsCollectionView.reloadData()
     }
     
+    func updateSearchedLocations(searchedLocations: [SearchLocation]) {
+        print("search location updated")
+    }
+    
     private func notifyAboutDeniedLocationPerm() {
         print("don't have permission for location")
     }
@@ -239,9 +256,10 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     @objc private func searchButtonClicked() {
         print("fetching data")
         guard let presenter = presenter as? AnyWeatherPresenter else { return }
-        let location = UserLocation(city: searchTextField.text!)
+        let location = UserLocation(city: searchBar.text!)
         presenter.fetchWeather(location)
         presenter.exploreForecast(location, days: 10)
+        searchBar.endEditing(true)
     }
     
     private func changeWeather(for location: UserLocation?) {
@@ -317,4 +335,15 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
         }
     }
     
+}
+
+extension WeatherViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        print("start")
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("clickd")
+        self.view.dismissKeyboad()
+    }
 }

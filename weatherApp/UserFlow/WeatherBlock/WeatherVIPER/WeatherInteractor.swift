@@ -12,6 +12,7 @@ protocol AnyWeatherInteractor: AnyInteractor {
     func getWeather(for location: UserLocation)
     func getWeatherForecast(for location: UserLocation, days: Int)
     func getNearbyCities(_ parameters: ParametersFindCitiesNearby)
+    func searchLocationByPart(_ part: String)
 }
 
 class WeatherInteractor: AnyWeatherInteractor, WorkWithAPI {
@@ -92,6 +93,12 @@ class WeatherInteractor: AnyWeatherInteractor, WorkWithAPI {
                     break
                 }
             }
+        }
+    }
+    
+    func searchLocationByPart(_ part: String) {
+        if let presenter = presenter as? AnyWeatherPresenter {
+            
         }
     }
 }
