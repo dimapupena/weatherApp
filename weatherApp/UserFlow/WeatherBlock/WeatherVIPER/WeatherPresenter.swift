@@ -8,80 +8,50 @@
 import Foundation
 import CoreLocation
 
-protocol AnyWeatherPresenter: AnyPresenter {
+protocol WeatherViewToPresenter {
+    var router: WeatherPresenterToRouter? { get set }
+    var interactor: WeatherPresenterToInteractor? { get set }
+    var view: WeatherPresenterToView? { get set }
+    
     func fetchWeather(_ location: UserLocation)
-    func interactorDidFetchWeather(with result: Result<Weather, Error>?)
-    
     func exploreForecast(_ location: UserLocation, days: Int)
-    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?)
-    
     func exploreNearbyCities(_ parameters: ParametersFindCitiesNearby)
-    func interactorHasExploredNearbyCities(cities: [String])
-
     func exploredLocaiton(location: UserLocation, locationData: CLLocation?)
-    
     func trySearchLocation(part: String)
+}
+
+protocol WeatherInteractorToPresenter {
+    func interactorDidFetchWeather(with result: Result<Weather, Error>?)
+    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?)
+    func interactorHasExploredNearbyCities(cities: [String])
     func interactorFetchedSearchedLocations(with result: Result<[SearchLocation], Error>?)
 }
 
-class WeatherPresenter: AnyWeatherPresenter {
-    var router: AnyRouter?
-    var interactor: AnyInteractor?
+class WeatherPresenter: WeatherViewToPresenter {
+    var router: WeatherPresenterToRouter?
+    var interactor: WeatherPresenterToInteractor?
+    var view: WeatherPresenterToView?
     
     var locationable: Locationable?
-    
-    var view: AnyView?
     
     func setupListeners() {
         self.locationable?.delegate = self
     }
     
-    func interactorDidFetchWeather(with result: Result<Weather, Error>?) {
-        guard let view = view as? AnyWeatherView else { return }
-        switch result {
-        case .success(let weather):
-            view.updateWeahter(with: weather)
-        case .failure:
-            view.updateWeahterWithError(with: nil)
-        case .none:
-            view.updateWeahterWithError(with: nil)
-        }
-    }
-    
     func fetchWeather(_ location: UserLocation) {
-        guard let interactor = interactor as? AnyWeatherInteractor else { return }
-        interactor.getWeather(for: location)
-    }
-    
-    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?) {
-        guard let view = view as? AnyWeatherView else { return }
-        switch result {
-        case .success(let forecast):
-            view.updateForecastWeahter(with: forecast)
-        default:
-            view.updateWeahterWithError(with: nil)
-        }
+        interactor?.getWeather(for: location)
     }
     
     func exploreForecast(_ location: UserLocation, days: Int = 10) {
-        guard let interactor = interactor as? AnyWeatherInteractor else { return }
-        interactor.getWeatherForecast(for: location, days: days)
+        interactor?.getWeatherForecast(for: location, days: days)
     }
     
     func exploreNearbyCities(_ parameters: ParametersFindCitiesNearby) {
-        guard let interactor = interactor as? AnyWeatherInteractor else { return }
-        interactor.getNearbyCities(parameters)
+        interactor?.getNearbyCities(parameters)
     }
-    
-    func interactorHasExploredNearbyCities(cities: [String]) {
-        guard let view = view as? AnyWeatherView else { return }
-        view.updateNearbyCities(cities: cities)
-    }
-    
     
     func exploredLocaiton(location: UserLocation, locationData: CLLocation?) {
-        guard let view = view as? AnyWeatherView else { return }
-        view.locationWasUpdated(to: location)
+        view?.locationWasUpdated(to: location)
         if let locationData = locationData {
             let findCitiesParameters = ParametersFindCitiesNearby(latitude: Decimal(locationData.coordinate.latitude), longitude: Decimal(locationData.coordinate.longitude), radius: 100, minPopulation: 50000, maxPopulation: 100000000)
             self.exploreNearbyCities(findCitiesParameters)
@@ -98,14 +68,40 @@ class WeatherPresenter: AnyWeatherPresenter {
         guard let interactor = interactor as? WeatherInteractor else { return }
         interactor.searchLocationByPart(part)
     }
+}
+
+extension WeatherPresenter: WeatherInteractorToPresenter {
+    
+    func interactorDidFetchWeather(with result: Result<Weather, Error>?) {
+        switch result {
+        case .success(let weather):
+            view?.updateWeahter(with: weather)
+        case .failure:
+            view?.updateWeahterWithError(with: nil)
+        case .none:
+            view?.updateWeahterWithError(with: nil)
+        }
+    }
+    
+    func interactorDidExploreForecast(with result: Result<ForecastWeather, Error>?) {
+        switch result {
+        case .success(let forecast):
+            view?.updateForecastWeahter(with: forecast)
+        default:
+            view?.updateWeahterWithError(with: nil)
+        }
+    }
+    
+    func interactorHasExploredNearbyCities(cities: [String]) {
+        view?.updateNearbyCities(cities: cities)
+    }
     
     func interactorFetchedSearchedLocations(with result: Result<[SearchLocation], Error>?) {
-        guard let view = view as? AnyWeatherView else { return }
         switch result {
         case .success(let locations):
-            view.updateSearchedLocations(searchedLocations: locations)
+            view?.updateSearchedLocations(searchedLocations: locations)
         default:
-            view.updateWeahterWithError(with: nil)
+            view?.updateWeahterWithError(with: nil)
         }
     }
     

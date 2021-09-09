@@ -8,97 +8,93 @@
 import Foundation
 import Alamofire
 
-protocol AnyWeatherInteractor: AnyInteractor {
+protocol WeatherPresenterToInteractor {
+    var presenter: WeatherInteractorToPresenter? { get set }
+    
     func getWeather(for location: UserLocation)
     func getWeatherForecast(for location: UserLocation, days: Int)
     func getNearbyCities(_ parameters: ParametersFindCitiesNearby)
     func searchLocationByPart(_ part: String)
 }
 
-class WeatherInteractor: AnyWeatherInteractor, WorkWithAPI {
-    var presenter: AnyPresenter?
+class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
+    var presenter: WeatherInteractorToPresenter?
     
     func getWeather(for location: UserLocation) {
-        if let weatherPresenter = presenter as? AnyWeatherPresenter {
-            guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, parameters: ["q" : "\(location.city)"]) else {
-                weatherPresenter.interactorDidFetchWeather(with: nil)
-                return
-            }
-            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
-                let decoder = JSONDecoder()
-                
-                switch response.result {
-                case .success:
-                    do {
-                        // cannot pars it((
-                        let resultWeather = try decoder.decode(Weather.self, from: response.data!)
-                        weatherPresenter.interactorDidFetchWeather(with: .success(resultWeather))
-                    } catch {
-                        weatherPresenter.interactorDidFetchWeather(with: nil)
-                        print("error")
-                    }
-                    print("success")
-                default:
-                    weatherPresenter.interactorDidFetchWeather(with: nil)
+        guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, parameters: ["q" : "\(location.city)"]) else {
+            presenter?.interactorDidFetchWeather(with: nil)
+            return
+        }
+        AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { [weak self] response in
+            guard let self = self else { return }
+            let decoder = JSONDecoder()
+            
+            switch response.result {
+            case .success:
+                do {
+                    // cannot pars it((
+                    let resultWeather = try decoder.decode(Weather.self, from: response.data!)
+                    self.presenter?.interactorDidFetchWeather(with: .success(resultWeather))
+                } catch {
+                    self.presenter?.interactorDidFetchWeather(with: nil)
                     print("error")
                 }
+                print("success")
+            default:
+                self.presenter?.interactorDidFetchWeather(with: nil)
+                print("error")
             }
         }
+        
     }
     
     func getWeatherForecast(for location: UserLocation, days: Int) {
-        if let weatherPresenter = presenter as? AnyWeatherPresenter {
-            let parameters: [String: String] = ["q" : "\(location.city)",
-                                              "days" : "10"]
-            guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url!), parameters: parameters) else {
-                return
-            }
-            
-            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { response in
-                let decoder = JSONDecoder()
-                
-                switch response.result {
-                case .success:
-                    do {
-                        let resultForecast = try decoder.decode(ForecastWeather.self, from: response.data!)
-                        weatherPresenter.interactorDidExploreForecast(with: .success(resultForecast))
-                    } catch  {
-                        weatherPresenter.interactorDidExploreForecast(with: nil)
-                    }
-                default:
-                    weatherPresenter.interactorDidExploreForecast(with: nil)
-                }
-            }
-
+        let parameters: [String: String] = ["q" : "\(location.city)",
+                                            "days" : "10"]
+        guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.forecast.url!), parameters: parameters) else {
+            return
         }
+        
+        AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { [weak self] response in
+            guard let self = self else { return }
+            let decoder = JSONDecoder()
+            
+            switch response.result {
+            case .success:
+                do {
+                    let resultForecast = try decoder.decode(ForecastWeather.self, from: response.data!)
+                    self.presenter?.interactorDidExploreForecast(with: .success(resultForecast))
+                } catch  {
+                    self.presenter?.interactorDidExploreForecast(with: nil)
+                }
+            default:
+                self.presenter?.interactorDidExploreForecast(with: nil)
+            }
+        }
+        
     }
     
     func getNearbyCities(_ parameters: ParametersFindCitiesNearby) {
-        if let presenter = presenter as? AnyWeatherPresenter {
-            let parameters: [String : String] =   ["latitude" : "\(parameters.latitude)",
-                                                   "longitude" : "\(parameters.longitude)",
-                                                   "radius" : "\(String(describing: parameters.radius ?? 0))",
-                                                   "min_population" : "\(String(describing: parameters.minPopulation ?? 0))",
-                                                   "max_population" : "\(String(describing: parameters.maxPopulation ?? 0))"]
-            guard let urlComponents = getURLComponents(url: CitiesApiParameters.Endpoints.citiesNearby.url!, parameters: parameters)  else { return }
-            AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: CitiesApiParameters.headers).validate().responseJSON { response in
-                switch response.result {
-                case .success:
-                    do {
-                        let data = try JSONSerialization.jsonObject(with: response.data!, options: [])
-                    } catch {
-                        
-                    }
-                default:
-                    break
+        let parameters: [String : String] =   ["latitude" : "\(parameters.latitude)",
+                                               "longitude" : "\(parameters.longitude)",
+                                               "radius" : "\(String(describing: parameters.radius ?? 0))",
+                                               "min_population" : "\(String(describing: parameters.minPopulation ?? 0))",
+                                               "max_population" : "\(String(describing: parameters.maxPopulation ?? 0))"]
+        guard let urlComponents = getURLComponents(url: CitiesApiParameters.Endpoints.citiesNearby.url!, parameters: parameters)  else { return }
+        AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: CitiesApiParameters.headers).validate().responseJSON { response in
+            switch response.result {
+            case .success:
+                do {
+                    let data = try JSONSerialization.jsonObject(with: response.data!, options: [])
+                } catch {
+                    
                 }
+            default:
+                break
             }
         }
     }
     
     func searchLocationByPart(_ part: String) {
-        if let presenter = presenter as? AnyWeatherPresenter {
-            
-        }
     }
 }

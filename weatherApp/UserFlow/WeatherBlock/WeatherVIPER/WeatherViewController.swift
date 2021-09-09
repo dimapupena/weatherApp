@@ -23,11 +23,7 @@ enum CollectionViewType {
     case weatherInfo
 }
 
-protocol AnyView {
-    var presenter: AnyPresenter? { get set }
-}
-
-protocol AnyWeatherView: AnyView {
+protocol WeatherPresenterToView {
     func updateWeahter(with weather: Weather?)
     func updateForecastWeahter(with forecast: ForecastWeather?)
     func locationWasUpdated(to location: UserLocation)
@@ -36,8 +32,8 @@ protocol AnyWeatherView: AnyView {
     func updateSearchedLocations(searchedLocations: [SearchLocation])
 }
 
-class WeatherViewController: UIViewController, AnyWeatherView {
-    var presenter: AnyPresenter?
+class WeatherViewController: UIViewController, WeatherPresenterToView {
+    var presenter: WeatherViewToPresenter?
     
     let dailyWeatherCollectionViewCellId = "weatherCell"
     let locationsCollectionViewCellId = "locationCell"
@@ -228,7 +224,6 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     }
     
     func locationWasUpdated(to location: UserLocation) {
-        guard let presenter = presenter as? AnyWeatherPresenter else { return }
         print("NEW location: \(location.city)")
         self.changeWeather(for: location)
     }
@@ -255,17 +250,16 @@ class WeatherViewController: UIViewController, AnyWeatherView {
     
     @objc private func searchButtonClicked() {
         print("fetching data")
-        guard let presenter = presenter as? AnyWeatherPresenter else { return }
         let location = UserLocation(city: searchBar.text!)
-        presenter.fetchWeather(location)
-        presenter.exploreForecast(location, days: 10)
+        presenter?.fetchWeather(location)
+        presenter?.exploreForecast(location, days: 10)
         searchBar.endEditing(true)
     }
     
     private func changeWeather(for location: UserLocation?) {
-        guard let location = location, let presenter = presenter as? AnyWeatherPresenter else { return }
-        presenter.fetchWeather(location)
-        presenter.exploreForecast(location, days: 10)
+        guard let location = location else { return }
+        presenter?.fetchWeather(location)
+        presenter?.exploreForecast(location, days: 10)
     }
     
     private func handleLocationPermission() {

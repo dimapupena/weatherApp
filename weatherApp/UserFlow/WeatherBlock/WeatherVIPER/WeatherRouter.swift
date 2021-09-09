@@ -8,21 +8,25 @@
 import Foundation
 import UIKit
 
-protocol AnyWeatherRouter: AnyRouter {
+typealias EntryPoint = UIViewController & UIViewController
 
+protocol WeatherPresenterToRouter {
+    var entryViewController: EntryPoint? { get }
+    
+    static func start() -> WeatherPresenterToRouter
 }
 
-class WeatherRouter: AnyWeatherRouter {
+class WeatherRouter: WeatherPresenterToRouter {
     var openSettingsBlock: (() -> Void)?
         
     var entryViewController: EntryPoint?
     
-    static func start() -> AnyRouter {
+    static func start() -> WeatherPresenterToRouter {
         let router = WeatherRouter()
         
-        var view: AnyView = WeatherViewController()
-        var presenter: AnyPresenter = WeatherPresenter()
-        var interactor: AnyInteractor = WeatherInteractor()
+        let view = WeatherViewController()
+        var presenter: WeatherViewToPresenter & WeatherInteractorToPresenter = WeatherPresenter()
+        var interactor: WeatherPresenterToInteractor = WeatherInteractor()
         let locationManager: Locationable = LocationManager()
         
         view.presenter = presenter
