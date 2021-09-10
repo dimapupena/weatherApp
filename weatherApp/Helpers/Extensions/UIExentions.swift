@@ -15,6 +15,22 @@ extension UIColor {
 }
 
 extension UIView {
+    func hideWithAnimation(_ duration: TimeInterval = 0.3) {
+        UIView.animate(withDuration: duration) {
+            self.alpha = 0
+        } completion: { [weak self] _ in
+            self?.isHidden = true
+        }
+    }
+    
+    func showWithAnimation(_ duration: TimeInterval = 0.3) {
+        self.alpha = 0
+        UIView.animate(withDuration: duration) {
+            self.isHidden = false
+            self.alpha = 1
+        }
+    }
+    
     @objc func dismissKeyboad() {
         self.endEditing(true)
     }

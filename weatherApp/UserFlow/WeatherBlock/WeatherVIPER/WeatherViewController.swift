@@ -23,6 +23,11 @@ enum CollectionViewType {
     case weatherInfo
 }
 
+enum WeatherViewState {
+    case standart
+    case searchingLocation
+}
+
 protocol WeatherPresenterToView {
     func updateWeahter(with weather: Weather?)
     func updateForecastWeahter(with forecast: ForecastWeather?)
@@ -40,6 +45,11 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
 
     var forecast: ForecastWeather?
     var nearbyCities: String? = ""
+    private var weatherViewState: WeatherViewState = .standart {
+        didSet {
+            self.updateWeatherViewState()
+        }
+    }
     
     private let settingsImageView: UIImageView = {
         let imageView = UIImageView()
@@ -67,6 +77,11 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(searchButtonClicked), for: .touchUpInside)
         return button
+    }()
+    
+    private let searchView: UISearchLocationView = {
+        let view = UISearchLocationView()
+        return view
     }()
     
     private lazy var locationsCollectionView: UICollectionView = {
@@ -103,6 +118,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         setupLocationsCollectionView()
         setupDailyWeatherCollectionView()
         setupWeatherDetailsView()
+        setupSearchView()
         
         setupGestureRecognizers()
     }
@@ -117,10 +133,6 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         let tapAnywhere = UIGestureRecognizer(target: self.weatherDetailsView, action: #selector(self.view.dismissKeyboad))
         tapAnywhere.cancelsTouchesInView = false
         self.weatherDetailsView.addGestureRecognizer(tapAnywhere)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
     }
     
     private func setupSettingsImageView() {
@@ -186,17 +198,42 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         }
     }
     
+    private func setupSearchView() {
+        self.view.addSubview(searchView)
+        searchView.isHidden = true
+        searchView.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom).offset(10)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    func updateWeatherViewState() {
+        var imageName = ""
+        switch weatherViewState {
+        case .standart:
+            imageName = "settings"
+        case .searchingLocation:
+            imageName = "cancel"
+        }
+        self.settingsImageView.image = UIImage(named: imageName)
+    }
+    
     private func setupGestureRecognizers() {
 //        let rightSwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(didSwipe))
 //        rightSwipeGestureRecognizer.direction = .right
-        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSwipe))
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(settingsButtonAction))
         settingsImageView.isUserInteractionEnabled = true
         self.settingsImageView.addGestureRecognizer(gestureRecognizer)
     }
     
-    @objc func didSwipe() {
+    @objc func settingsButtonAction() {
         if let presenter = presenter as? WeatherPresenter {
-            presenter.openSettingsBlock()
+            switch weatherViewState {
+            case .standart:
+                presenter.openSettingsBlock()
+            case .searchingLocation:
+                self.endSearching()
+            }
         }
     }
     
@@ -253,7 +290,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         let location = UserLocation(city: searchBar.text!)
         presenter?.fetchWeather(location)
         presenter?.exploreForecast(location, days: 10)
-        searchBar.endEditing(true)
+        endSearching()
     }
     
     private func changeWeather(for location: UserLocation?) {
@@ -278,6 +315,17 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
             presenter.locationable?.requestPermission()
 
         }
+    }
+    
+    private func startSearching() {
+        self.searchView.showWithAnimation()
+        self.weatherViewState = .searchingLocation
+    }
+    
+    private func endSearching() {
+        self.searchView.hideWithAnimation()
+        self.weatherViewState = .standart
+        self.view.dismissKeyboad()
     }
 }
 
@@ -333,11 +381,12 @@ extension WeatherViewController: UICollectionViewDelegate, UICollectionViewDataS
 
 extension WeatherViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        self.startSearching()
         print("start")
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        self.endSearching()
         print("clickd")
-        self.view.dismissKeyboad()
     }
 }

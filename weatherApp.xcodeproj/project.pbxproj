@@ -16,6 +16,8 @@
 		6D22B54126E424730085E302 /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B54026E424730085E302 /* ApplicationCoordinator.swift */; };
 		6D22B54526E569B10085E302 /* BackButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B54426E569B10085E302 /* BackButtonView.swift */; };
 		6D22B54B26E6C4C40085E302 /* SearchLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B54A26E6C4C40085E302 /* SearchLocation.swift */; };
+		6D22B5A026EBEB830085E302 /* UISearchLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B59F26EBEB830085E302 /* UISearchLocationView.swift */; };
+		6D22B5A226EBEC8F0085E302 /* UISearchLocationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D22B5A126EBEC8F0085E302 /* UISearchLocationTableViewCell.swift */; };
 		6D6F3EB0268A00FB007FCB0D /* WeatherDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */; };
 		6D9B20CC26DA5DF0003487FC /* UILocationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */; };
 		6D9B20CF26DA7322003487FC /* WeatherLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9B20CE26DA7322003487FC /* WeatherLocation.swift */; };
@@ -48,6 +50,8 @@
 		6D22B54026E424730085E302 /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
 		6D22B54426E569B10085E302 /* BackButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButtonView.swift; sourceTree = "<group>"; };
 		6D22B54A26E6C4C40085E302 /* SearchLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLocation.swift; sourceTree = "<group>"; };
+		6D22B59F26EBEB830085E302 /* UISearchLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISearchLocationView.swift; sourceTree = "<group>"; };
+		6D22B5A126EBEC8F0085E302 /* UISearchLocationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISearchLocationTableViewCell.swift; sourceTree = "<group>"; };
 		6D6F3EAF268A00FB007FCB0D /* WeatherDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailsView.swift; sourceTree = "<group>"; };
 		6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILocationCollectionViewCell.swift; sourceTree = "<group>"; };
 		6D9B20CE26DA7322003487FC /* WeatherLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherLocation.swift; sourceTree = "<group>"; };
@@ -91,7 +95,7 @@
 				6DBC3DD8268332EE00AA3DFF /* WeatherRequests */,
 				6DBC3DD9268332FB00AA3DFF /* WeatherResponse */,
 				6DBC3DD12683246400AA3DFF /* WeatherAPIHelper */,
-				6DBC3DDC2685C7EA00AA3DFF /* WeatherViewCells */,
+				6DBC3DDC2685C7EA00AA3DFF /* WeatherViews */,
 				6DBC3DC526821E7300AA3DFF /* WeatherVIPER */,
 			);
 			path = WeatherBlock;
@@ -264,13 +268,15 @@
 			path = WeatherResponse;
 			sourceTree = "<group>";
 		};
-		6DBC3DDC2685C7EA00AA3DFF /* WeatherViewCells */ = {
+		6DBC3DDC2685C7EA00AA3DFF /* WeatherViews */ = {
 			isa = PBXGroup;
 			children = (
 				6D9B20CB26DA5DF0003487FC /* UILocationCollectionViewCell.swift */,
 				6DBC3DDD2685C81A00AA3DFF /* UIWeatherCollectionViewCell.swift */,
+				6D22B59F26EBEB830085E302 /* UISearchLocationView.swift */,
+				6D22B5A126EBEC8F0085E302 /* UISearchLocationTableViewCell.swift */,
 			);
-			path = WeatherViewCells;
+			path = WeatherViews;
 			sourceTree = "<group>";
 		};
 		A2EF49EEE13264CAD038CFF2 /* Frameworks */ = {
@@ -413,6 +419,7 @@
 				6DBC3DCD26821ECB00AA3DFF /* WeatherRouter.swift in Sources */,
 				6DBC3DDB2683331400AA3DFF /* CurrentWeather.swift in Sources */,
 				6D6F3EB0268A00FB007FCB0D /* WeatherDetailsView.swift in Sources */,
+				6D22B5A226EBEC8F0085E302 /* UISearchLocationTableViewCell.swift in Sources */,
 				6DBC3DDE2685C81A00AA3DFF /* UIWeatherCollectionViewCell.swift in Sources */,
 				6DBC3DC726821EA100AA3DFF /* WeatherInteractor.swift in Sources */,
 				6DBC3DB426821D9D00AA3DFF /* SceneDelegate.swift in Sources */,
@@ -428,6 +435,7 @@
 				6D22B53226E2B42B0085E302 /* APIHelpers.swift in Sources */,
 				6D22B54B26E6C4C40085E302 /* SearchLocation.swift in Sources */,
 				6D22B54126E424730085E302 /* ApplicationCoordinator.swift in Sources */,
+				6D22B5A026EBEB830085E302 /* UISearchLocationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
