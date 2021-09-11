@@ -19,6 +19,7 @@ class WeatherAPIParameters: ApiParameters {
         
         case currentWeather
         case forecast
+        case searchLocation
         
         var stringValue: String {
             switch self {
@@ -26,6 +27,8 @@ class WeatherAPIParameters: ApiParameters {
                 return Endpoints.base + "/current.json"
             case .forecast:
                 return Endpoints.base + "/forecast.json"
+            case .searchLocation:
+                return Endpoints.base + "/search.json"
             }
         }
         

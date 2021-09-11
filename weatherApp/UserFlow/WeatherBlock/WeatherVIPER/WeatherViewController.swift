@@ -81,6 +81,8 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     
     private let searchView: UISearchLocationView = {
         let view = UISearchLocationView()
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 20
         return view
     }()
     
@@ -201,6 +203,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     private func setupSearchView() {
         self.view.addSubview(searchView)
         searchView.isHidden = true
+        searchView.delegate = self
         searchView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
@@ -270,6 +273,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     }
     
     func updateSearchedLocations(searchedLocations: [SearchLocation]) {
+        searchView.updateLocation(searchedLocations)
         print("search location updated")
     }
     
@@ -325,7 +329,19 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     private func endSearching() {
         self.searchView.hideWithAnimation()
         self.weatherViewState = .standart
+        self.searchBar.text = ""
         self.view.dismissKeyboad()
+    }
+}
+
+extension WeatherViewController: UISearchLocationViewDelegate {
+    func finishedUseKeynoard() {
+        self.view.dismissKeyboad()
+    }
+    
+    func locationWasSelected(_ location: SearchLocation) {
+        print("SELECTED location: \(location.name)")
+        self.endSearching()
     }
 }
 
@@ -386,7 +402,13 @@ extension WeatherViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.endSearching()
+//        self.endSearching()
+        self.presenter?.trySearchLocation(part: self.searchBar.text ?? "")
         print("clickd")
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.presenter?.trySearchLocation(part: searchText)
+    }
+    
 }

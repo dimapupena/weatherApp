@@ -13,7 +13,6 @@ struct SearchLocation: Decodable {
     let name: String
     let region: String
     let country: String
-    let tz_id: String
-    let localtime_epoch: Int
-    let localtime: String
+    let id: Int
+    let url: String
 }

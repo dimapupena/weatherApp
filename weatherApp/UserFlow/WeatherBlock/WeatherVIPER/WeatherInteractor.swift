@@ -17,6 +17,7 @@ protocol WeatherPresenterToInteractor {
     func searchLocationByPart(_ part: String)
 }
 
+
 class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
     var presenter: WeatherInteractorToPresenter?
     
@@ -96,5 +97,23 @@ class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
     }
     
     func searchLocationByPart(_ part: String) {
+        let parameters: [String : String] = [ "q" : "\(part)"]
+        guard let urlComponents = getURLComponents(url: WeatherAPIParameters.Endpoints.searchLocation.url!, parameters: parameters) else { return }
+        let dataRequest = AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let data):
+                do {
+                    let decoder = JSONDecoder()
+                    let data = try JSONSerialization.jsonObject(with: response.data!, options: [])
+                    let searchResult = try decoder.decode([SearchLocation].self, from: response.data!)
+                    self.presenter?.interactorFetchedSearchedLocations(with: .success(searchResult))
+                } catch {
+                    self.presenter?.interactorFetchedSearchedLocations(with: .failure(error))
+                }
+            default:
+                break
+            }
+        }
     }
 }
