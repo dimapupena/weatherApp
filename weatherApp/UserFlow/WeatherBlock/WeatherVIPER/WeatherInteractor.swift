@@ -20,6 +20,7 @@ protocol WeatherPresenterToInteractor {
 
 class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
     var presenter: WeatherInteractorToPresenter?
+    private var curentSearchRequest: DataRequest?
     
     func getWeather(for location: UserLocation) {
         guard let urlComponents = getURLComponents(url: (WeatherAPIParameters.Endpoints.currentWeather.url)!, parameters: ["q" : "\(location.city)"]) else {
@@ -97,9 +98,10 @@ class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
     }
     
     func searchLocationByPart(_ part: String) {
+        self.curentSearchRequest?.cancel()
         let parameters: [String : String] = [ "q" : "\(part)"]
         guard let urlComponents = getURLComponents(url: WeatherAPIParameters.Endpoints.searchLocation.url!, parameters: parameters) else { return }
-        let dataRequest = AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { [weak self] response in
+        self.curentSearchRequest = AF.request(urlComponents.url?.absoluteString as! URLConvertible, method: .get, headers: WeatherAPIParameters.headers).validate().responseJSON { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success(let data):
@@ -108,6 +110,7 @@ class WeatherInteractor: WeatherPresenterToInteractor, WorkWithAPI {
                     let data = try JSONSerialization.jsonObject(with: response.data!, options: [])
                     let searchResult = try decoder.decode([SearchLocation].self, from: response.data!)
                     self.presenter?.interactorFetchedSearchedLocations(with: .success(searchResult))
+                    print("Recieve data from search request")
                 } catch {
                     self.presenter?.interactorFetchedSearchedLocations(with: .failure(error))
                 }

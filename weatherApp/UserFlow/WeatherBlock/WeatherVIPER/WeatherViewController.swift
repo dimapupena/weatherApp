@@ -274,7 +274,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     
     func updateSearchedLocations(searchedLocations: [SearchLocation]) {
         searchView.updateLocation(searchedLocations)
-        print("search location updated")
+//        print("search location updated")
     }
     
     private func notifyAboutDeniedLocationPerm() {
@@ -341,6 +341,7 @@ extension WeatherViewController: UISearchLocationViewDelegate {
     
     func locationWasSelected(_ location: SearchLocation) {
         print("SELECTED location: \(location.name)")
+        self.changeWeather(for: UserLocation(city: location.name))
         self.endSearching()
     }
 }
