@@ -28,7 +28,7 @@ class SettingsViewController: UIViewController {
         self.viewModel = SettingsViewModel()
     }
     
-    func setupBackButton() {
+    private func setupBackButton() {
         self.view.addSubview(backButton)
         
         backButton.snp.makeConstraints { make in

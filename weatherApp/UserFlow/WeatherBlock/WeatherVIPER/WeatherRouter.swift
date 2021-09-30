@@ -18,6 +18,7 @@ protocol WeatherPresenterToRouter {
 
 class WeatherRouter: WeatherPresenterToRouter {
     var openSettingsBlock: (() -> Void)?
+    var openUserMapBlock: (() -> Void)?
         
     var entryViewController: EntryPoint?
     

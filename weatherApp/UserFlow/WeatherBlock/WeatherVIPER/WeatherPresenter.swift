@@ -64,6 +64,12 @@ class WeatherPresenter: WeatherViewToPresenter {
         }
     }
     
+    func openUserMapBlock() {
+        if let router = router as? WeatherRouter {
+            router.openUserMapBlock?()
+        }
+    }
+    
     func trySearchLocation(part: String) {
         guard let interactor = interactor as? WeatherInteractor else { return }
         interactor.searchLocationByPart(part)

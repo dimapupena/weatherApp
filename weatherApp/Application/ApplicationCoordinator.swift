@@ -24,22 +24,33 @@ class ApplicationCoordinator: AnyCoordinator {
         startWeatherBlock()
     }
     
-    func startWeatherBlock() {
+    private func startWeatherBlock() {
         let weatherRouter = WeatherRouter.start() as? WeatherRouter
         weatherRouter?.openSettingsBlock = {
             self.startSettingsBlock()
+        }
+        weatherRouter?.openUserMapBlock = {
+            self.startUserMapBlock()
         }
         if let initialVC = weatherRouter?.entryViewController {
             router.pushViewController(initialVC, animated: true)
         }
     }
     
-    func startSettingsBlock() {
+    private func startSettingsBlock() {
         let settingsVC = SettingsViewController()
         settingsVC.onFinish = { [weak self] in
             self?.router.popViewController(animated: true)
         }
         router.pushViewController(settingsVC, animated: true)
+    }
+    
+    private func startUserMapBlock() {
+        let mapVC = UserMapViewController()
+        mapVC.onFinish = { [weak self] in
+            self?.router.popViewController(animated: true)
+        }
+        router.pushViewController(mapVC, animated: true)
     }
     
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 extension UIColor {
     convenience init(red: Int, green: Int, blue: Int, a: CGFloat = 1.0) {
@@ -34,4 +35,14 @@ extension UIView {
     @objc func dismissKeyboad() {
         self.endEditing(true)
     }
+}
+
+extension MKMapView {
+  func centerToLocation(_ location: CLLocation, regionRadius: CLLocationDistance = 1000) {
+    let coordinateRegion = MKCoordinateRegion(
+      center: location.coordinate,
+      latitudinalMeters: regionRadius,
+      longitudinalMeters: regionRadius)
+    setRegion(coordinateRegion, animated: true)
+  }
 }

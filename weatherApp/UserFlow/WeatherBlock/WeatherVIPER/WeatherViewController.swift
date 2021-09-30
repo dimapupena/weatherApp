@@ -108,6 +108,15 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         return collectionView
     }()
     
+    private let currentLocationImage: CurrentLocationView = CurrentLocationView()
+    
+    private let openMapImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "openMap")
+        imageView.isUserInteractionEnabled = true
+        return imageView
+    }()
+    
     private let weatherDetailsView: WeatherDetailsView = WeatherDetailsView()
     
     override func viewDidLoad() {
@@ -121,6 +130,8 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
         setupDailyWeatherCollectionView()
         setupWeatherDetailsView()
         setupSearchView()
+        setupOpenMapImageView()
+        setupCurrentLocationImageView()
         
         setupGestureRecognizers()
     }
@@ -208,6 +219,41 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
             make.top.equalTo(searchBar.snp.bottom).offset(10)
             make.leading.trailing.bottom.equalToSuperview()
         }
+    }
+    
+    private func setupOpenMapImageView() {
+        self.view.addSubview(openMapImageView)
+        let gestureReognizer = UITapGestureRecognizer(target: self, action: #selector(openMapClickAction))
+        openMapImageView.addGestureRecognizer(gestureReognizer)
+        
+        openMapImageView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).inset(40)
+            make.height.width.equalTo(50)
+        }
+    }
+    
+    private func setupCurrentLocationImageView() {
+        self.view.addSubview(currentLocationImage)
+        currentLocationImage.tapAction = { [weak self] in
+            self?.currentLocationClickAction()
+        }
+        
+        currentLocationImage.snp.makeConstraints { make in
+            make.trailing.equalTo(openMapImageView.snp.trailing)
+            make.bottom.equalTo(openMapImageView.snp.top).offset(-10)
+            make.height.width.equalTo(50)
+        }
+    }
+    
+    @objc private func openMapClickAction() {
+        if let presenter = presenter as? WeatherPresenter {
+            presenter.openUserMapBlock()
+        }
+    }
+    
+    private func currentLocationClickAction() {
+        print("dasda")
     }
 
     func updateWeatherViewState() {
