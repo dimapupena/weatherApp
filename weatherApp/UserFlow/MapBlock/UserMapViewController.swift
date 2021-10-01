@@ -13,6 +13,8 @@ class UserMapViewController: UIViewController {
     
     var onFinish: (() -> Void)?
     
+    private var viewModel: UserMapViewModel?
+    
     private lazy var backButton: BackButtonView = BackButtonView()
     private var mapView: MKMapView = {
         let map = MKMapView()
@@ -31,6 +33,10 @@ class UserMapViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.changeMapPointTo(CLLocation(latitude: 21.282778, longitude: -157.829444))
         }
+    }
+    
+    func injectViewModel(_ viewModel: UserMapViewModel) {
+        self.viewModel = viewModel
     }
     
     private func setupViews() {
@@ -56,7 +62,7 @@ class UserMapViewController: UIViewController {
         mapView.snp.makeConstraints { make in
             make.top.equalTo(backButton.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+            make.bottom.equalToSuperview()
         }
     }
     
@@ -74,7 +80,7 @@ class UserMapViewController: UIViewController {
     }
     
     private func currentLocationClickAction() {
-        print("action")
+        viewModel?.findCurrentLocation()
     }
     
     func changeMapPointTo(_ location: CLLocation) {

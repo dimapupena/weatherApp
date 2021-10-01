@@ -64,9 +64,9 @@ class WeatherPresenter: WeatherViewToPresenter {
         }
     }
     
-    func openUserMapBlock() {
+    func openUserMapBlock(_ startLocation: CLLocation?) {
         if let router = router as? WeatherRouter {
-            router.openUserMapBlock?()
+            router.openUserMapBlock?(startLocation)
         }
     }
     

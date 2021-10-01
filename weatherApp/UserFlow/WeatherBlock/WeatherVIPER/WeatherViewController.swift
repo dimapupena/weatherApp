@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Foundation
+import CoreLocation
 
 // viewController
 // protocol
@@ -248,7 +249,7 @@ class WeatherViewController: UIViewController, WeatherPresenterToView {
     
     @objc private func openMapClickAction() {
         if let presenter = presenter as? WeatherPresenter {
-            presenter.openUserMapBlock()
+            presenter.openUserMapBlock(CLLocation(latitude: 112.282778, longitude: -21.323))
         }
     }
     

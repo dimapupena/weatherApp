@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import CoreLocation
 
 typealias EntryPoint = UIViewController & UIViewController
 
@@ -18,7 +19,7 @@ protocol WeatherPresenterToRouter {
 
 class WeatherRouter: WeatherPresenterToRouter {
     var openSettingsBlock: (() -> Void)?
-    var openUserMapBlock: (() -> Void)?
+    var openUserMapBlock: ((CLLocation?) -> Void)?
         
     var entryViewController: EntryPoint?
     
